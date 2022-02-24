@@ -4,10 +4,15 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.ExampleMatcher.StringMatcher;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.ricardossl.localizacao.domain.entity.Cidade;
 import com.ricardossl.localizacao.repository.CidadeRepository;
+import com.ricardossl.localizacao.repository.specs.CidadeSpecs;
 import com.ricardossl.localizacao.service.CidadeService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,6 +31,20 @@ public class CidadeServiceImpl implements CidadeService {
 	public List<Cidade> listarCidades() {
 		return repository.findAll();
 	}
-	
-	
+
+	@Override
+	public List<Cidade> listarCidadesDinamico(Cidade cidade) {
+		ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreCase("nome").withStringMatcher(StringMatcher.STARTING);
+
+		Example<Cidade> example = Example.of(cidade, matcher);
+		return repository.findAll(example);
+	}
+
+	@Override
+	public List<Cidade> listarCidadesByNomeSpecs(String nome) {
+		Specification<Cidade> specs = CidadeSpecs.nomeEqual(nome).or(CidadeSpecs.habitantesGreaterThan(500));
+		
+		return repository.findAll(specs);
+	}
+
 }
