@@ -1,6 +1,7 @@
 package com.ricardossl.localizacao.service.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -34,7 +35,8 @@ public class CidadeServiceImpl implements CidadeService {
 
 	@Override
 	public List<Cidade> listarCidadesDinamico(Cidade cidade) {
-		ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreCase("nome").withStringMatcher(StringMatcher.STARTING);
+		ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreCase("nome")
+				.withStringMatcher(StringMatcher.STARTING);
 
 		Example<Cidade> example = Example.of(cidade, matcher);
 		return repository.findAll(example);
@@ -42,9 +44,17 @@ public class CidadeServiceImpl implements CidadeService {
 
 	@Override
 	public List<Cidade> listarCidadesByNomeSpecs(String nome) {
-		Specification<Cidade> specs = CidadeSpecs.nomeEqual(nome).or(CidadeSpecs.habitantesGreaterThan(500));
-		
+		Specification<Cidade> specs = CidadeSpecs.nomeEqual(nome).and(CidadeSpecs.habitantesGreaterThan(500));
+
 		return repository.findAll(specs);
+	}
+
+	@Override
+	public List<Cidade> findByNomeNativo(String nome) {
+		return repository.findByNomeNativoProjection(nome).stream()
+				.map(cidadeProjection 
+						-> new Cidade(cidadeProjection.getId(), cidadeProjection.getNome(), null))
+				.collect(Collectors.toList());
 	}
 
 }

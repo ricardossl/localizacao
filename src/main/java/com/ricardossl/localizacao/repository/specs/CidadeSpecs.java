@@ -17,4 +17,5 @@ public class CidadeSpecs {
 		return (root, query, criteriaBuilder) 
 				-> criteriaBuilder.greaterThan(root.get("habitantes"), value);
 	}
+	
 }

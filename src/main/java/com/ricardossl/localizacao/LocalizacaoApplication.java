@@ -24,7 +24,7 @@ public class LocalizacaoApplication implements CommandLineRunner {
 
 		var cidade = Cidade.builder().nome("Goiânia").build();
 
-		service.listarCidadesByNomeSpecs(cidade.getNome()).forEach(t -> logger.warn(t.toString()));
+		service.findByNomeNativo(cidade.getNome()).forEach(t -> logger.warn(t.toString()));
 	}
 
 	public static void main(String[] args) {
